@@ -1,49 +1,46 @@
-#include <iostream>
-#include <algorithm>
-#include <set>
-#include <vector>
-
+#include <bits/stdc++.h>
 using namespace std;
 
-const int MAXN = 2e5 + 5;
-int dp[MAXN];
+typedef pair<int,int> pii;
+const int maxN = 2e5 + 1;
+const int INF = 0x3f3f3f3f;
+
+int N;
+int dp[maxN];
 vector<int> tallers;
-vector<pair<int,int>> mounts;
-set<int, greater<int>> sl;
-set<int, greater<int>> sr;
+vector<pii> mountains;
+set<int, greater<int>> S_l;
+set<int> S_r;
 
 int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0); cout.tie(0);
+    scanf("%d", &N);
 
-    int num;
-    cin >> num;
-
-    for(int i = 1, u; i <= num; ++i) {
-        cin >> u;
-        mounts.push_back({u, i});
+    for (int i = 1, h; i <= N; i++) {
+        scanf("%d", &h);
+        mountains.push_back({h, i});
     }
 
-    sort(mounts.begin(), mounts.end(), greater<pair<int,int>>());
+    sort(mountains.begin(), mountains.end(), greater<pii>());
 
-    int last_height = -1;
-    for(auto m : mounts) {
+    int last_height = INF;
+
+    for (pii m : mountains) {
         int h = m.first;
         int i = m.second;
 
-        if(last_height != h) {
-            for(int t : tallers) {
-                sl.insert(t);
-                sr.insert(t);
+        if (last_height != h) {
+            for (int t : tallers) {
+                S_l.insert(t);
+                S_r.insert(t);
             }
             tallers.clear();
         }
 
-        auto l_ptr = sl.lower_bound(i);
-        auto r_ptr = sr.lower_bound(i);
+        auto l_ptr = S_l.lower_bound(i);
+        auto r_ptr = S_r.lower_bound(i);
 
-        int l = (l_ptr == sl.end() ? 0 : *l_ptr);
-        int r = (r_ptr == sr.end() ? 0 : *r_ptr);
+        int l = (l_ptr == S_l.end() ? 0 : *l_ptr);
+        int r = (r_ptr == S_r.end() ? 0 : *r_ptr);
 
         dp[i] = max(dp[l], dp[r]) + 1;
 
@@ -52,8 +49,9 @@ int main() {
     }
 
     int best = 0;
-    for(int i = 1; i <= num; ++i)
+    for (int i = 1; i <= N; i++) {
         best = max(best, dp[i]);
+    }
 
-    cout << best << '\n';
+    printf("%d\n", best);
 }
